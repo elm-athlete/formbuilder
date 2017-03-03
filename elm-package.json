@@ -1,7 +1,7 @@
 {
     "version": "1.0.0",
     "summary": "Generic form builder in Elm",
-    "repository": "https://github.com/user/project.git",
+    "repository": "https://github.com/elm-bodybuilder/formbuilder.git",
     "license": "MIT",
     "source-directories": [
         "src"
