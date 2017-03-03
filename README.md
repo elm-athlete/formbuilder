@@ -5,5 +5,5 @@ It is built to be easily extensible, using a beautiful plugin system.
 
 Two modules have already been developed for it :
 
-- (Elm FieldBuilder Photo)[http://github.com/elm-bodybuilder/formbuilder-photo]
-- (Elm FieldBuilder Autocomplete)[http://github.com/elm-bodybuilder/formbuilder-autocomplete]
+- [Elm FieldBuilder Photo](http://github.com/elm-bodybuilder/formbuilder-photo)
+- [Elm FieldBuilder Autocomplete](http://github.com/elm-bodybuilder/formbuilder-autocomplete)
