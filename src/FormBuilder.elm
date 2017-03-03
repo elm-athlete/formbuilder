@@ -1,4 +1,4 @@
-module FormBuilder.FormBuilder exposing (new)
+module FormBuilder exposing (new)
 
 {-| Create a new form by using differents fields. The form is modular and accepts a list of Html msg, allowing everyone to add custom fields.
 
