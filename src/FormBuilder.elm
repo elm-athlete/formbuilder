@@ -1,6 +1,8 @@
 module FormBuilder.FormBuilder exposing (new)
 
 {-| Create a new form by using differents fields. The form is modular and accepts a list of Html msg, allowing everyone to add custom fields.
+
+# Creation
 @docs new
 -}
 
@@ -26,8 +28,8 @@ new recordName csrfToken fields =
         ]
     <|
         List.concat
-            [ [ defaultHidden Nothing
-                    [ Attributes.type_ "hidden"
+            [ [ FieldBuilder.defaultHidden
+                    [ Attributes.type_ Attributes.Hidden
                     , Attributes.fieldName "authenticity_token"
                     , Attributes.value csrfToken
                     ]

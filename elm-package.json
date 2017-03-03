@@ -9,7 +9,8 @@
     "exposed-modules": [
         "FormBuilder",
         "FormBuilder.FieldBuilder",
-        "FormBuilder.FieldBuilder.Attributes"
+        "FormBuilder.FieldBuilder.Attributes",
+        "FormBuilder.FieldBuilder.Events"
     ],
     "dependencies": {
         "elm-community/list-extra": "6.0.0 <= v < 7.0.0",

@@ -136,7 +136,7 @@ genericInput attributes view =
 
         finalAttrs =
             List.concat
-                [ case attributes.common.event of
+                [ case attributes.common.onInput of
                     Nothing ->
                         []
 

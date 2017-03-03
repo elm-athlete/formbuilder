@@ -2,11 +2,13 @@ module FormBuilder.FieldBuilder.Attributes
     exposing
         ( InputType(..)
         , AttributesModifier
-        , Event
         , FieldAttributes
+        , CommonAttributes
         , defaultAttributes
         , commonAttributes
         , label
+        , objectName
+        , fieldName
         , noBottomPadding
         , value
         , id
@@ -15,18 +17,15 @@ module FormBuilder.FieldBuilder.Attributes
         , placeholder
         , hidden
         , options
-        , onInput
-        , onFocus
-        , onBlur
-        , onChange
         )
 
-{-|
+{-| Handle fields attributes. Create default attributes, and provide setters to modifiy them easily. Each modifier can be combined with others with function composition.
+
 # Types
 @docs InputType
 @docs AttributesModifier
-@docs Event
 @docs FieldAttributes
+@docs CommonAttributes
 
 # Default Fields
 @docs defaultAttributes
@@ -34,6 +33,8 @@ module FormBuilder.FieldBuilder.Attributes
 
 # Attributes Modifiers
 @docs label
+@docs objectName
+@docs fieldName
 @docs noBottomPadding
 @docs value
 @docs id
@@ -42,10 +43,6 @@ module FormBuilder.FieldBuilder.Attributes
 @docs placeholder
 @docs hidden
 @docs options
-@docs onInput
-@docs onFocus
-@docs onBlur
-@docs onChange
 -}
 
 
@@ -58,18 +55,14 @@ type InputType
     | File
 
 
-{-| Event for triggering Cmd on action on a field.
--}
-type alias Event msg =
-    String -> msg
-
-
 {-| Attributes for a field. Could be extended by subfields.
 -}
 type alias FieldAttributes sub msg =
     { sub | common : CommonAttributes msg }
 
 
+{-| Common attributes shared by all form fields.
+-}
 type alias CommonAttributes msg =
     { value : Maybe String
     , objectName : Maybe String
@@ -81,9 +74,8 @@ type alias CommonAttributes msg =
     , mandatory : Bool
     , hidden : Bool
     , options : Maybe (List ( String, Int ))
-    , event : Maybe (Event msg)
     , noBottomPadding : Bool
-    , onInput : Maybe (Event msg)
+    , onInput : Maybe (String -> msg)
     , onFocus : Maybe msg
     , onBlur : Maybe msg
     , onChange : Maybe msg
@@ -117,7 +109,6 @@ commonAttributes =
     , mandatory = False
     , hidden = False
     , options = Nothing
-    , event = Nothing
     , noBottomPadding = False
     , onInput = Nothing
     , onFocus = Nothing
@@ -216,36 +207,4 @@ hidden ({ common } as fieldAttributes) =
 options : List ( String, Int ) -> FieldAttributes a msg -> FieldAttributes a msg
 options options ({ common } as fieldAttributes) =
     { common | options = Just options }
-        |> modifyDefaultAttributes fieldAttributes
-
-
-{-| Set the event to trigger on input on the field.
--}
-onInput : Event msg -> FieldAttributes a msg -> FieldAttributes a msg
-onInput event ({ common } as fieldAttributes) =
-    { common | onInput = Just event }
-        |> modifyDefaultAttributes fieldAttributes
-
-
-{-| Set the event to trigger on focus on the field.
--}
-onFocus : msg -> FieldAttributes a msg -> FieldAttributes a msg
-onFocus event ({ common } as fieldAttributes) =
-    { common | onFocus = Just event }
-        |> modifyDefaultAttributes fieldAttributes
-
-
-{-| Set the event to trigger on blur on the field.
--}
-onBlur : msg -> FieldAttributes a msg -> FieldAttributes a msg
-onBlur event ({ common } as fieldAttributes) =
-    { common | onBlur = Just event }
-        |> modifyDefaultAttributes fieldAttributes
-
-
-{-| Set the event to trigger on change on the field.
--}
-onChange : msg -> FieldAttributes a msg -> FieldAttributes a msg
-onChange msg ({ common } as fieldAttributes) =
-    { common | onChange = Just msg }
         |> modifyDefaultAttributes fieldAttributes
