@@ -1,4 +1,0 @@
-var _user$project$FormBuilder_Fields_Autocomplete_Type$AutocompleteAttributes = F6(
-	function (a, b, c, d, e, f) {
-		return {choices: a, choiceView: b, onSelect: c, searchQuery: d, focused: e, selectedElement: f};
-	});

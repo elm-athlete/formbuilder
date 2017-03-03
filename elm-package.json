@@ -8,12 +8,8 @@
     ],
     "exposed-modules": [
         "FormBuilder",
-        "FieldBuilder",
-        "Photo",
-        "Autocomplete",
-        "Autocomplete.Attributes",
-        "Autocomplete.Types",
-        "Autocomplete.View"
+        "FormBuilder.FieldBuilder",
+        "FormBuilder.FieldBuilder.Attributes"
     ],
     "dependencies": {
         "elm-community/list-extra": "6.0.0 <= v < 7.0.0",

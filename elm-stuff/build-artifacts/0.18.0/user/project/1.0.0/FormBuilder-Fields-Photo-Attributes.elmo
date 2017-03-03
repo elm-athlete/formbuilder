@@ -1,4 +1,0 @@
-var _user$project$FormBuilder_Fields_Photo_Attributes$PhotoAttributes = F2(
-	function (a, b) {
-		return {photos: a, selectedPhotoId: b};
-	});
