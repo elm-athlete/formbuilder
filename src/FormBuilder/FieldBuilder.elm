@@ -86,11 +86,21 @@ input inputType attrs val =
         []
 
 
+addAttributeIfExist : Maybe a -> (a -> b) -> List b
+addAttributeIfExist maybeAttribute htmlAttribute =
+    case maybeAttribute of
+        Nothing ->
+            []
+
+        Just attribute ->
+            [ htmlAttribute attribute ]
+
+
 genericInput : FieldAttributes a msg -> Maybe (FieldView a msg) -> Html msg
 genericInput attributes view =
     let
         isHidden =
-            if attributes.common.mandatory && attributes.common.value == "" then
+            if attributes.common.mandatory && attributes.common.value == Nothing then
                 False
             else
                 attributes.common.hidden
@@ -102,7 +112,7 @@ genericInput attributes view =
                 attributes.common.type_ |> withDefault Text
 
         value =
-            attributes.common.value
+            attributes.common.value |> Maybe.withDefault ""
 
         name =
             case inputName attributes.common.objectName attributes.common.fieldName of
@@ -111,14 +121,6 @@ genericInput attributes view =
 
                 Just inputName_ ->
                     [ Html.Attributes.name inputName_ ]
-
-        addAttributeIfExist maybeAttribute htmlAttribute =
-            case maybeAttribute of
-                Nothing ->
-                    []
-
-                Just maybeAttribute ->
-                    [ htmlAttribute maybeAttribute ]
 
         attributes_ =
             List.concat
@@ -162,7 +164,7 @@ object defaultAttributes view customModifiers =
             attributes.common.mandatory
 
         isHidden =
-            if isMandatory && attributes.common.value == "" then
+            if isMandatory && attributes.common.value == Nothing then
                 False
             else
                 attributes.common.hidden

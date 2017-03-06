@@ -64,7 +64,7 @@ type alias FieldAttributes sub msg =
 {-| Common attributes shared by all form fields.
 -}
 type alias CommonAttributes msg =
-    { value : String
+    { value : Maybe String
     , objectName : Maybe String
     , fieldName : Maybe String
     , id : Maybe String
@@ -99,7 +99,7 @@ defaultAttributes =
 -}
 commonAttributes : CommonAttributes msg
 commonAttributes =
-    { value = ""
+    { value = Nothing
     , id = Nothing
     , objectName = Nothing
     , fieldName = Nothing
@@ -164,7 +164,7 @@ value : String -> FieldAttributes a msg -> FieldAttributes a msg
 value val ({ common } as fieldAttributes) =
     fieldAttributes
         |> updateDefaultAttributes
-            { common | value = val }
+            { common | value = Just val }
 
 
 {-| Set the id of the field.
