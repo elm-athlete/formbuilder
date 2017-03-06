@@ -29,23 +29,18 @@ import FormBuilder.FieldBuilder.Attributes as Attributes
         )
 
 
-{-| Represent a view for a field. Takes attributes in parameters, and returns an HTML msg. -}
+{-| Represent a view for a field. Takes attributes in parameters, and returns an HTML msg.
+-}
 type alias FieldView a msg =
-    FieldAttributes a msg -> List (Html.Attribute msg) -> List (Html.Attribute msg) -> String -> Html msg
+    FieldAttributes a msg -> Html msg
 
 
 option : String -> ( String, Int ) -> Html msg
-option selected current =
+option selected ( optionText, valueInsideList ) =
     let
-        valueInsideList : Int
-        valueInsideList =
-            Tuple.second current
-
-        valueSelected : Int
         valueSelected =
             String.toInt selected |> Result.withDefault 0
 
-        isSameValue : Bool
         isSameValue =
             valueInsideList == valueSelected
     in
@@ -53,7 +48,7 @@ option selected current =
             [ Html.Attributes.value (toString valueInsideList)
             , Html.Attributes.selected isSameValue
             ]
-            [ Html.text (Tuple.first current) ]
+            [ Html.text optionText ]
 
 
 select : List (Html.Attribute msg) -> String -> List ( String, Int ) -> Html msg
@@ -64,15 +59,15 @@ select name selected options =
 label : Maybe String -> Bool -> Bool -> Html msg
 label text isHidden mandatory =
     let
-        lbl =
+        label_ =
             if isHidden then
                 Nothing
             else
                 text
     in
-        case lbl of
-            Just l ->
-                Html.label [] [ Html.text (labelText l mandatory) ]
+        case label_ of
+            Just labelName ->
+                Html.label [] [ Html.text (labelText labelName mandatory) ]
 
             Nothing ->
                 Html.text ""
@@ -95,7 +90,7 @@ genericInput : FieldAttributes a msg -> Maybe (FieldView a msg) -> Html msg
 genericInput attributes view =
     let
         isHidden =
-            if attributes.common.mandatory && attributes.common.value /= Nothing then
+            if attributes.common.mandatory && attributes.common.value == "" then
                 False
             else
                 attributes.common.hidden
@@ -106,11 +101,8 @@ genericInput attributes view =
             else
                 attributes.common.type_ |> withDefault Text
 
-        val =
-            attributes.common.value |> withDefault ""
-
-        id =
-            Html.Attributes.id (attributes.common.id |> withDefault "")
+        value =
+            attributes.common.value
 
         name =
             case inputName attributes.common.objectName attributes.common.fieldName of
@@ -120,47 +112,24 @@ genericInput attributes view =
                 Just inputName_ ->
                     [ Html.Attributes.name inputName_ ]
 
-        attrs =
+        addAttributeIfExist maybeAttribute htmlAttribute =
+            case maybeAttribute of
+                Nothing ->
+                    []
+
+                Just maybeAttribute ->
+                    [ htmlAttribute maybeAttribute ]
+
+        attributes_ =
             List.concat
-                [ [ Html.Attributes.required attributes.common.mandatory
-                  , id
-                  , Html.Attributes.placeholder
-                        (if val == "" then
-                            (attributes.common.placeholder |> withDefault "")
-                         else
-                            ""
-                        )
-                  ]
-                , name
-                ]
-
-        finalAttrs =
-            List.concat
-                [ case attributes.common.onInput of
-                    Nothing ->
-                        []
-
-                    Just event ->
-                        [ Html.Events.onInput event ]
-                , case attributes.common.onBlur of
-                    Nothing ->
-                        []
-
-                    Just event ->
-                        [ Html.Events.onBlur event ]
-                , case attributes.common.onFocus of
-                    Nothing ->
-                        []
-
-                    Just event ->
-                        [ Html.Events.onFocus event ]
-                , case attributes.common.onChange of
-                    Nothing ->
-                        []
-
-                    Just msg ->
-                        [ Html.Events.on "change" (Json.succeed msg) ]
-                , attrs
+                [ [ Html.Attributes.required attributes.common.mandatory ]
+                , addAttributeIfExist attributes.common.placeholder Html.Attributes.placeholder
+                , addAttributeIfExist (inputName attributes.common.objectName attributes.common.fieldName) Html.Attributes.name
+                , addAttributeIfExist attributes.common.id Html.Attributes.id
+                , addAttributeIfExist attributes.common.onInput Html.Events.onInput
+                , addAttributeIfExist attributes.common.onBlur Html.Events.onBlur
+                , addAttributeIfExist attributes.common.onFocus Html.Events.onFocus
+                , addAttributeIfExist attributes.common.onChange <| Html.Events.on "change" << Json.succeed
                 ]
     in
         case view of
@@ -169,19 +138,20 @@ genericInput attributes view =
                     Nothing ->
                         case inputType of
                             TextArea ->
-                                Html.textarea finalAttrs [ Html.text val ]
+                                Html.textarea attributes_ [ Html.text value ]
 
                             _ ->
-                                input inputType finalAttrs val
+                                input inputType attributes_ value
 
                     Just options ->
-                        select name val options
+                        select name value options
 
-            Just v ->
-                v attributes finalAttrs name val
+            Just view_ ->
+                view_ attributes
 
 
-{-| Generates a generic object, ready to be renderd by FormBuilder. Accepts attributes, view and modifiers. -}
+{-| Generates a generic object, ready to be renderd by FormBuilder. Accepts attributes, view and modifiers.
+-}
 object : FieldAttributes a msg -> Maybe (FieldView a msg) -> List (AttributesModifier a msg) -> Html msg
 object defaultAttributes view customModifiers =
     let
@@ -192,7 +162,7 @@ object defaultAttributes view customModifiers =
             attributes.common.mandatory
 
         isHidden =
-            if isMandatory && attributes.common.value /= Nothing then
+            if isMandatory && attributes.common.value == "" then
                 False
             else
                 attributes.common.hidden
@@ -210,19 +180,19 @@ object defaultAttributes view customModifiers =
             , genericInput attributes view
             ]
 
-{-| Generates a default input field. Generates default attributes, use the default view, and render the field with their attributes. -}
+
+{-| Generates a default input field. Generates default attributes, use the default view, and render the field with their attributes.
+-}
 default : List (AttributesModifier {} msg) -> Html msg
 default =
     object Attributes.defaultAttributes Nothing
 
-{-| Generates a default hidden input field. Generates default attributes, and force the field to be hidden. -}
+
+{-| Generates a default hidden input field. Generates default attributes, and force the field to be hidden.
+-}
 defaultHidden : List (AttributesModifier {} msg) -> Html msg
 defaultHidden =
     object (Attributes.hidden Attributes.defaultAttributes) Nothing
-
-
-
--- Not exposed
 
 
 inputName : Maybe String -> Maybe String -> Maybe String
