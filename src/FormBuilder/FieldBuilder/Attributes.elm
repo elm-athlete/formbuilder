@@ -117,8 +117,8 @@ commonAttributes =
     }
 
 
-modifyDefaultAttributes : FieldAttributes a msg -> CommonAttributes msg -> FieldAttributes a msg
-modifyDefaultAttributes fieldAttributes newAttributes =
+updateDefaultAttributes : CommonAttributes msg -> FieldAttributes a msg -> FieldAttributes a msg
+updateDefaultAttributes newAttributes fieldAttributes =
     { fieldAttributes | common = newAttributes }
 
 
@@ -126,85 +126,96 @@ modifyDefaultAttributes fieldAttributes newAttributes =
 -}
 label : String -> FieldAttributes a msg -> FieldAttributes a msg
 label lbl ({ common } as fieldAttributes) =
-    { common | label = Just lbl }
-        |> modifyDefaultAttributes fieldAttributes
+    fieldAttributes
+        |> updateDefaultAttributes
+            { common | label = Just lbl }
 
 
 {-| Set the objectName of the field.
 -}
 objectName : String -> FieldAttributes a msg -> FieldAttributes a msg
 objectName name ({ common } as fieldAttributes) =
-    { common | objectName = Just name }
-        |> modifyDefaultAttributes fieldAttributes
+    fieldAttributes
+        |> updateDefaultAttributes
+            { common | objectName = Just name }
 
 
 {-| Set the fieldName of the field.
 -}
 fieldName : String -> FieldAttributes a msg -> FieldAttributes a msg
 fieldName name ({ common } as fieldAttributes) =
-    { common | fieldName = Just name }
-        |> modifyDefaultAttributes fieldAttributes
+    fieldAttributes
+        |> updateDefaultAttributes
+            { common | fieldName = Just name }
 
 
 {-| Disable bottom padding.
 -}
 noBottomPadding : FieldAttributes a msg -> FieldAttributes a msg
 noBottomPadding ({ common } as fieldAttributes) =
-    { common | noBottomPadding = True }
-        |> modifyDefaultAttributes fieldAttributes
+    fieldAttributes
+        |> updateDefaultAttributes
+            { common | noBottomPadding = True }
 
 
 {-| Set the value of the field.
 -}
 value : String -> FieldAttributes a msg -> FieldAttributes a msg
 value val ({ common } as fieldAttributes) =
-    { common | value = Just val }
-        |> modifyDefaultAttributes fieldAttributes
+    fieldAttributes
+        |> updateDefaultAttributes
+            { common | value = Just val }
 
 
 {-| Set the id of the field.
 -}
 id : String -> FieldAttributes a msg -> FieldAttributes a msg
 id id ({ common } as fieldAttributes) =
-    { common | id = Just id }
-        |> modifyDefaultAttributes fieldAttributes
+    fieldAttributes
+        |> updateDefaultAttributes
+            { common | id = Just id }
 
 
 {-| Set the type of the field.
 -}
 type_ : InputType -> FieldAttributes a msg -> FieldAttributes a msg
 type_ value ({ common } as fieldAttributes) =
-    { common | type_ = Just value }
-        |> modifyDefaultAttributes fieldAttributes
+    fieldAttributes
+        |> updateDefaultAttributes
+            { common | type_ = Just value }
 
 
 {-| Makes the field mandatory.
 -}
 mandatory : FieldAttributes a msg -> FieldAttributes a msg
 mandatory ({ common } as fieldAttributes) =
-    { common | mandatory = True }
-        |> modifyDefaultAttributes fieldAttributes
+    fieldAttributes
+        |> updateDefaultAttributes
+            { common | mandatory = True }
 
 
 {-| Set the placeholder of the field.
 -}
 placeholder : String -> FieldAttributes a msg -> FieldAttributes a msg
 placeholder value ({ common } as fieldAttributes) =
-    { common | placeholder = Just value }
-        |> modifyDefaultAttributes fieldAttributes
+    fieldAttributes
+        |> updateDefaultAttributes
+            { common | placeholder = Just value }
 
 
 {-| Hide the field.
 -}
 hidden : FieldAttributes a msg -> FieldAttributes a msg
 hidden ({ common } as fieldAttributes) =
-    { common | hidden = True }
-        |> modifyDefaultAttributes fieldAttributes
+    fieldAttributes
+        |> updateDefaultAttributes
+            { common | hidden = True }
 
 
 {-| Set the options of the field.
 -}
 options : List ( String, Int ) -> FieldAttributes a msg -> FieldAttributes a msg
 options options ({ common } as fieldAttributes) =
-    { common | options = Just options }
-        |> modifyDefaultAttributes fieldAttributes
+    fieldAttributes
+        |> updateDefaultAttributes
+            { common | options = Just options }

@@ -22,8 +22,8 @@ module FormBuilder.FieldBuilder.Events
 import FormBuilder.FieldBuilder.Attributes exposing (..)
 
 
-modifyDefaultAttributes : FieldAttributes a msg -> CommonAttributes msg -> FieldAttributes a msg
-modifyDefaultAttributes fieldAttributes newAttributes =
+updateDefaultAttributes : CommonAttributes msg -> FieldAttributes a msg -> FieldAttributes a msg
+updateDefaultAttributes newAttributes fieldAttributes =
     { fieldAttributes | common = newAttributes }
 
 
@@ -37,29 +37,33 @@ type alias Event msg =
 -}
 onInput : Event msg -> FieldAttributes a msg -> FieldAttributes a msg
 onInput event ({ common } as fieldAttributes) =
-    { common | onInput = Just event }
-        |> modifyDefaultAttributes fieldAttributes
+    fieldAttributes
+        |> updateDefaultAttributes
+            { common | onInput = Just event }
 
 
 {-| Set the event to trigger on focus on the field.
 -}
 onFocus : msg -> FieldAttributes a msg -> FieldAttributes a msg
 onFocus event ({ common } as fieldAttributes) =
-    { common | onFocus = Just event }
-        |> modifyDefaultAttributes fieldAttributes
+    fieldAttributes
+        |> updateDefaultAttributes
+            { common | onFocus = Just event }
 
 
 {-| Set the event to trigger on blur on the field.
 -}
 onBlur : msg -> FieldAttributes a msg -> FieldAttributes a msg
 onBlur event ({ common } as fieldAttributes) =
-    { common | onBlur = Just event }
-        |> modifyDefaultAttributes fieldAttributes
+    fieldAttributes
+        |> updateDefaultAttributes
+            { common | onBlur = Just event }
 
 
 {-| Set the event to trigger on change on the field.
 -}
 onChange : msg -> FieldAttributes a msg -> FieldAttributes a msg
 onChange msg ({ common } as fieldAttributes) =
-    { common | onChange = Just msg }
-        |> modifyDefaultAttributes fieldAttributes
+    fieldAttributes
+        |> updateDefaultAttributes
+            { common | onChange = Just msg }
