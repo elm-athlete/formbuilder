@@ -10,13 +10,17 @@ module FormBuilder.FieldBuilder.Attributes
         , objectName
         , fieldName
         , noBottomPadding
+        , removeNameIfEmpty
         , value
         , id
+        , autocomplete
         , type_
         , mandatory
         , placeholder
         , hidden
         , options
+        , nestedName
+        , nestedIndice
         )
 
 {-| Handle fields attributes. Create default attributes, and provide setters to modifiy them easily. Each modifier can be combined with others with function composition.
@@ -35,9 +39,13 @@ module FormBuilder.FieldBuilder.Attributes
 @docs label
 @docs objectName
 @docs fieldName
+@docs nestedName
+@docs nestedIndice
 @docs noBottomPadding
+@docs removeNameIfEmpty
 @docs value
 @docs id
+@docs autocomplete
 @docs type_
 @docs mandatory
 @docs placeholder
@@ -67,14 +75,18 @@ type alias CommonAttributes msg =
     { value : Maybe String
     , objectName : Maybe String
     , fieldName : Maybe String
+    , nestedName : Maybe String
+    , nestedIndice : Maybe Int
     , id : Maybe String
     , type_ : Maybe InputType
     , label : Maybe String
     , placeholder : Maybe String
+    , autocomplete : Maybe Bool
     , mandatory : Bool
     , hidden : Bool
     , options : Maybe (List ( String, Int ))
     , noBottomPadding : Bool
+    , removeNameIfEmpty : Bool
     , onInput : Maybe (String -> msg)
     , onFocus : Maybe msg
     , onBlur : Maybe msg
@@ -103,13 +115,17 @@ commonAttributes =
     , id = Nothing
     , objectName = Nothing
     , fieldName = Nothing
+    , nestedName = Nothing
+    , nestedIndice = Nothing
     , type_ = Nothing
     , label = Nothing
     , placeholder = Nothing
+    , autocomplete = Nothing
     , mandatory = False
     , hidden = False
     , options = Nothing
     , noBottomPadding = False
+    , removeNameIfEmpty = False
     , onInput = Nothing
     , onFocus = Nothing
     , onBlur = Nothing
@@ -147,6 +163,24 @@ fieldName name ({ common } as fieldAttributes) =
     fieldAttributes
         |> updateDefaultAttributes
             { common | fieldName = Just name }
+
+
+{-| Set the nestedName of the field.
+-}
+nestedName : String -> FieldAttributes a msg -> FieldAttributes a msg
+nestedName name ({ common } as fieldAttributes) =
+    fieldAttributes
+        |> updateDefaultAttributes
+            { common | nestedName = Just name }
+
+
+{-| Set the nestedIndice of the field.
+-}
+nestedIndice : Int -> FieldAttributes a msg -> FieldAttributes a msg
+nestedIndice indice ({ common } as fieldAttributes) =
+    fieldAttributes
+        |> updateDefaultAttributes
+            { common | nestedIndice = Just indice }
 
 
 {-| Disable bottom padding.
@@ -212,6 +246,15 @@ hidden ({ common } as fieldAttributes) =
             { common | hidden = True }
 
 
+{-| Set the html autocomplete attribute.
+-}
+autocomplete : Bool -> FieldAttributes a msg -> FieldAttributes a msg
+autocomplete value ({ common } as fieldAttributes) =
+    fieldAttributes
+        |> updateDefaultAttributes
+            { common | autocomplete = Just value }
+
+
 {-| Set the options of the field.
 -}
 options : List ( String, Int ) -> FieldAttributes a msg -> FieldAttributes a msg
@@ -219,3 +262,12 @@ options options ({ common } as fieldAttributes) =
     fieldAttributes
         |> updateDefaultAttributes
             { common | options = Just options }
+
+
+{-| Remove the html name attribute if the value is Nothing or empty
+-}
+removeNameIfEmpty : FieldAttributes a msg -> FieldAttributes a msg
+removeNameIfEmpty ({ common } as fieldAttributes) =
+    fieldAttributes
+        |> updateDefaultAttributes
+            { common | removeNameIfEmpty = True }

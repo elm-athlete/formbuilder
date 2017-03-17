@@ -6,7 +6,7 @@ module FormBuilder.FieldBuilder
         , defaultHidden
         )
 
-{-|
+{-| Creates generic fields for FormBuilder. It can be used as a base to creates new customs fields.
 # Types
 @docs FieldView
 
@@ -74,13 +74,13 @@ label text isHidden mandatory =
 
 
 input : InputType -> List (Html.Attribute msg) -> String -> Html msg
-input inputType attrs val =
+input inputType attributes val =
     Html.input
         (Html.Attributes.type_ (inputTypeToString inputType)
             :: (if inputType == File then
-                    attrs
+                    attributes
                 else
-                    (Html.Attributes.value val) :: attrs
+                    (Html.Attributes.value val) :: attributes
                )
         )
         []
@@ -115,19 +115,26 @@ genericInput attributes view =
             attributes.common.value |> Maybe.withDefault ""
 
         name =
-            case inputName attributes.common.objectName attributes.common.fieldName of
-                Nothing ->
-                    []
+            if attributes.common.removeNameIfEmpty && value == "" then
+                []
+            else
+                case inputName attributes.common of
+                    Nothing ->
+                        []
 
-                Just inputName_ ->
-                    [ Html.Attributes.name inputName_ ]
+                    Just inputName_ ->
+                        [ Html.Attributes.name inputName_ ]
 
         attributes_ =
             List.concat
                 [ [ Html.Attributes.required attributes.common.mandatory ]
-                , addAttributeIfExist attributes.common.placeholder Html.Attributes.placeholder
-                , addAttributeIfExist (inputName attributes.common.objectName attributes.common.fieldName) Html.Attributes.name
+                , if value == "" then
+                    addAttributeIfExist attributes.common.placeholder Html.Attributes.placeholder
+                  else
+                    []
+                , addAttributeIfExist (inputName attributes.common) Html.Attributes.name
                 , addAttributeIfExist attributes.common.id Html.Attributes.id
+                , addAttributeIfExist attributes.common.autocomplete Html.Attributes.autocomplete
                 , addAttributeIfExist attributes.common.onInput Html.Events.onInput
                 , addAttributeIfExist attributes.common.onBlur Html.Events.onBlur
                 , addAttributeIfExist attributes.common.onFocus Html.Events.onFocus
@@ -176,7 +183,7 @@ object defaultAttributes view customModifiers =
             (if isHidden || noBottomPadding then
                 []
              else
-                [ Html.Attributes.class "pb" ]
+                [ Html.Attributes.style [ ( "padding-bottom", "12px" ) ] ]
             )
             [ label attributes.common.label isHidden isMandatory
             , genericInput attributes view
@@ -197,19 +204,33 @@ defaultHidden =
     object (Attributes.hidden Attributes.defaultAttributes) Nothing
 
 
-inputName : Maybe String -> Maybe String -> Maybe String
-inputName objectName attributeName =
-    case attributeName of
+hook : String -> String
+hook str =
+    "[" ++ str ++ "]"
+
+
+inputName : Attributes.CommonAttributes msg -> Maybe String
+inputName { objectName, fieldName, nestedName, nestedIndice } =
+    case fieldName of
         Nothing ->
             Nothing
 
-        Just attributeName_ ->
+        Just fieldName_ ->
             case objectName of
                 Nothing ->
-                    Just attributeName_
+                    Just fieldName_
 
                 Just objectName_ ->
-                    Just (objectName_ ++ "[" ++ attributeName_ ++ "]")
+                    let
+                        nested =
+                            case nestedName of
+                                Nothing ->
+                                    ""
+
+                                Just nestedName_ ->
+                                    (hook (nestedName_ ++ "_attributes") ++ hook (nestedIndice |> withDefault 0 |> toString))
+                    in
+                        Just (objectName_ ++ nested ++ hook fieldName_)
 
 
 inputTypeToString : InputType -> String
