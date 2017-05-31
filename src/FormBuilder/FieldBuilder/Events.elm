@@ -9,16 +9,22 @@ module FormBuilder.FieldBuilder.Events
 
 {-| Handle events which may happen on fields. Each modifier can be combined with others with function composition.
 
+
 # Type
+
 @docs Event
 
+
 # Events
+
 @docs onInput
 @docs onFocus
 @docs onBlur
 @docs onChange
+
 -}
 
+import Json.Decode exposing (Value)
 import FormBuilder.FieldBuilder.Attributes exposing (..)
 
 
@@ -62,7 +68,7 @@ onBlur event ({ common } as fieldAttributes) =
 
 {-| Set the event to trigger on change on the field.
 -}
-onChange : msg -> FieldAttributes a msg -> FieldAttributes a msg
+onChange : (Value -> msg) -> FieldAttributes a msg -> FieldAttributes a msg
 onChange msg ({ common } as fieldAttributes) =
     fieldAttributes
         |> updateDefaultAttributes
