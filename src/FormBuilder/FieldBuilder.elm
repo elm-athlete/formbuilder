@@ -158,8 +158,7 @@ genericInput attributes view =
                     Nothing ->
                         case inputType of
                             TextArea ->
-                                Html.div []
-                                    [ Html.textarea (Html.Attributes.value value :: attributes_) [ Html.text value ] ]
+                                Html.textarea (Html.Attributes.value value :: attributes_) [ Html.text value ]
 
                             _ ->
                                 input inputType attributes_ value

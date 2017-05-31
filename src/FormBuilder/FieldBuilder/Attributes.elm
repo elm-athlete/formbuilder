@@ -12,7 +12,6 @@ module FormBuilder.FieldBuilder.Attributes
         , noBottomPadding
         , removeNameIfEmpty
         , value
-        , id
         , autocomplete
         , type_
         , mandatory
@@ -50,7 +49,6 @@ module FormBuilder.FieldBuilder.Attributes
 @docs noBottomPadding
 @docs removeNameIfEmpty
 @docs value
-@docs id
 @docs autocomplete
 @docs type_
 @docs mandatory
@@ -95,7 +93,6 @@ type alias CommonAttributes msg =
     , options : Maybe (List ( String, Int ))
     , noBottomPadding : Bool
     , removeNameIfEmpty : Bool
-    , id : Maybe msg
     , onInput : Maybe (String -> msg)
     , onFocus : Maybe msg
     , onBlur : Maybe msg
@@ -121,7 +118,6 @@ defaultAttributes =
 commonAttributes : CommonAttributes msg
 commonAttributes =
     { value = Nothing
-    , id = Nothing
     , objectName = Nothing
     , fieldName = Nothing
     , nestedName = Nothing
@@ -208,15 +204,6 @@ value val ({ common } as fieldAttributes) =
     fieldAttributes
         |> updateDefaultAttributes
             { common | value = Just val }
-
-
-{-| Set the id of the field.
--}
-id : msg -> FieldAttributes a msg -> FieldAttributes a msg
-id id ({ common } as fieldAttributes) =
-    fieldAttributes
-        |> updateDefaultAttributes
-            { common | id = Just id }
 
 
 {-| Set the type of the field.
